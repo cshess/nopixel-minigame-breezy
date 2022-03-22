@@ -1,7 +1,6 @@
 import { $, shuffleArray, delay, playSound } from './helpers.js'
 import { generateRandomPuzzle, generateQuestionAndAnswer } from './puzzle-factory.js'
 import { getPuzzleSvg } from './svg-factory.js'
-import { translatePuzzle, translateQA } from './translator.js'
 
 const progressBar = $('.answer-progress-bar')
 const inputElement = $('.answer-input')
@@ -27,10 +26,9 @@ export async function doPuzzle(){
       
     // generate numbers and display
     const nums = shuffleArray([...Array(puzzleAmount)].map((v, i) => i+1))
-    console.log(nums)
     await displayNumbers(nums)
 
-    const metronome = (puzzleTime == 7) ? playSound('assets/metronome.mp3') : playSound('assets/long-metronome.mp3')
+    const metronome = playSound('assets/metronome.mp3')
 
     // clear and focus input window
     $('.answer-section').classList.remove('hidden')
@@ -46,22 +44,13 @@ export async function doPuzzle(){
     progressBar.classList.add('answer-progress-bar-shrink')
     
 
-    
-
     // display puzzle in squares
-    squares.forEach((square, i) => {
-        square.style.backgroundColor = puzzles[i].colors['background']
-        square.innerHTML =  getPuzzleSvg(puzzles[i])
-    })
+    squares.forEach((square, i) => square.style.backgroundColor = puzzles[i].colors['background'])
+    squares.forEach((square, i)  => square.innerHTML =  getPuzzleSvg(puzzles[i]))
 
     // generate and display question
     const [question, answer] = generateQuestionAndAnswer(nums, puzzles) 
     $('.answer-question').textContent = question.toUpperCase()
-
-    
-    
-    // for learning purposes
-    console.log(answer)
 
     return new Promise((resolve) => {
 
@@ -77,7 +66,7 @@ export async function doPuzzle(){
         delay(puzzleTime).then(() => {
             metronome.pause()
             resolve([null, answer])
-        });
+        })
     });
 }
 
@@ -92,7 +81,5 @@ async function displayNumbers(numbers){
 }
 
 // puzzle time settins
-const timeRange = $('#speed-control')
-const puzzleRange = $('#puzzle-control')
-timeRange.addEventListener('input', () => puzzleTime = $('.time-display').textContent = timeRange.value)
-puzzleRange.addEventListener('input', () => puzzleAmount = $('.puzzle-display').textContent = parseInt(puzzleRange.value))
+const timeRange = 7
+const puzzleRange = 4
